@@ -26,4 +26,20 @@
       if(btn){btn.disabled=false;btn.textContent='Надіслати заявку'}
     }
   };
+
+  const addSimpleLink=(parent,href,text)=>{
+    if(!parent||parent.querySelector(`a[href="${href}"]`))return;
+    const a=document.createElement('a');a.href=href;a.textContent=text;parent.appendChild(a);
+  };
+  const nav=document.querySelector('.links');
+  addSimpleLink(nav,'/pro-solodealer','Про нас');
+  addSimpleLink(nav,'/faq','FAQ');
+  const foot=document.querySelector('.foot-links');
+  addSimpleLink(foot,'/pro-solodealer','Про SoloDealer');
+  addSimpleLink(foot,'/faq','FAQ');
+  const seo=document.querySelector('.seo-links');
+  if(seo&&!seo.querySelector('a[href="/pro-solodealer"]')){
+    const about=document.createElement('a');about.className='seo-link';about.href='/pro-solodealer';about.innerHTML='<b>Про SoloDealer →</b><span>Як працює сервіс і що відбувається після заявки.</span>';seo.appendChild(about);
+    const faq=document.createElement('a');faq.className='seo-link';faq.href='/faq';faq.innerHTML='<b>Часті питання →</b><span>Перший внесок, кредит, виплата, документи та актуальність авто.</span>';seo.appendChild(faq);
+  }
 })();
