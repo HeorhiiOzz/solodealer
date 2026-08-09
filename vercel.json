@@ -1,3 +1,16 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "functions": {
+    "api/reminder-worker.mjs": {
+      "maxDuration": 30,
+      "experimentalTriggers": [
+        {
+          "type": "queue/v2beta",
+          "topic": "client-reminders",
+          "retryAfterSeconds": 60,
+          "initialDelaySeconds": 0
+        }
+      ]
+    }
+  }
 }
