@@ -1,5 +1,6 @@
 const crypto=require('crypto');
 const {readClients,writeClients}=require('../lib/clientStore');
+const {notifyLead}=require('../lib/telegramNotify');
 
 const clean=(v,n=500)=>String(v??'').trim().slice(0,n);
 const keyContact=v=>clean(v,120).toLowerCase().replace(/[\s()\-]/g,'');
@@ -16,6 +17,7 @@ module.exports=async(req,res)=>{
     const now=new Date().toISOString();
     const match=keyContact(contact);
     let client=clients.find(c=>keyContact(c.contact)===match);
+    const isNew=!client;
     const source=clean(b.source,60)||'Сайт';
     const event={at:now,type:'lead',text:`Нова заявка: ${source}`};
 
@@ -63,7 +65,15 @@ module.exports=async(req,res)=>{
       };
       clients.unshift(client);
     }
+
     await writeClients(clients);
+
+    try{
+      await notifyLead(client,{isNew});
+    }catch(e){
+      console.error('Telegram notify failed',e);
+    }
+
     return res.status(200).json({ok:true,id:client.id});
   }catch(e){
     console.error(e);
