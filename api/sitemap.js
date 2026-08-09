@@ -5,7 +5,7 @@ module.exports=async(req,res)=>{
     if(req.method!=='GET') return res.status(405).end('Method not allowed');
     const cars=await readPublicCars();
     const base='https://solodealer.store';
-    const fixed=['/','/avto-pid-vyplatu','/avto-v-kredyt','/anketa'];
+    const fixed=['/','/avto-pid-vyplatu','/avto-v-kredyt','/pro-solodealer','/faq','/anketa'];
     const urls=[...fixed,...cars.map(c=>`/auto/${encodeURIComponent(c.id)}`)];
     const body=`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u=>`  <url><loc>${xml(base+u)}</loc></url>`).join('\n')}\n</urlset>`;
     res.setHeader('Content-Type','application/xml; charset=utf-8');
