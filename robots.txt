@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /crm
+Disallow: /telegram
+Disallow: /api/
+
+Sitemap: https://solodealer.store/sitemap.xml
