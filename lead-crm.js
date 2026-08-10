@@ -43,6 +43,45 @@
     const faq=document.createElement('a');faq.className='seo-link';faq.href='/faq';faq.innerHTML='<b>Часті питання →</b><span>Перший внесок, кредит, виплата, документи та актуальність авто.</span>';seo.appendChild(faq);
   }
 
+  // Каталог: людяний фільтр стану авто замість сухого «з пробігом».
+  const filters=document.querySelector('.filters');
+  const grid=document.getElementById('grid');
+  let conditionSelect=null;
+  if(filters&&!document.getElementById('condition')){
+    conditionSelect=document.createElement('select');
+    conditionSelect.id='condition';
+    conditionSelect.className='field';
+    conditionSelect.setAttribute('aria-label','Стан авто');
+    conditionSelect.innerHTML='<option value="">Стан авто</option><option value="new">Нове авто</option><option value="runin">Після обкатки</option>';
+    const max=document.getElementById('max');
+    filters.insertBefore(conditionSelect,max||filters.lastElementChild);
+    const style=document.createElement('style');
+    style.textContent='@media(min-width:901px){.filters{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr auto!important}}';
+    document.head.appendChild(style);
+  }else conditionSelect=document.getElementById('condition');
+
+  const applyCondition=()=>{
+    if(!grid||!conditionSelect)return;
+    const mode=conditionSelect.value;
+    [...grid.querySelectorAll('.card')].forEach(card=>{
+      if(!mode){card.style.display='';return}
+      const meta=card.querySelector('.meta')?.textContent||'';
+      const match=meta.match(/([\d\s.,]+)\s*км/i);
+      if(!match){card.style.display='none';return}
+      const km=Number(match[1].replace(/[^\d]/g,''))||0;
+      card.style.display=(mode==='new'?km===0:km>0)?'':'none';
+    });
+  };
+  if(conditionSelect)conditionSelect.addEventListener('change',applyCondition);
+  if(grid){
+    new MutationObserver(applyCondition).observe(grid,{childList:true});
+    setTimeout(applyCondition,0);
+  }
+  if(typeof window.resetF==='function'){
+    const originalReset=window.resetF;
+    window.resetF=function(){originalReset();if(conditionSelect)conditionSelect.value='';applyCondition()};
+  }
+
   window.openCar=function(id){
     if(!id)return;
     location.href='/auto/'+encodeURIComponent(id);
