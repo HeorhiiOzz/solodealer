@@ -1,1 +1,1 @@
-SoloDealer rollback trigger: restored clean Hit sales hero.
+SoloDealer rollback trigger: restored clean Hit sales hero again.
