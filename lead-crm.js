@@ -37,11 +37,21 @@
   const foot=document.querySelector('.foot-links');
   addSimpleLink(foot,'/pro-solodealer','Про SoloDealer');
   addSimpleLink(foot,'/faq','FAQ');
+  addSimpleLink(foot,'/avto-bez-pershoho-vnesku','Без першого внеску');
+  addSimpleLink(foot,'/avto-z-minimalnym-pershym-vneskom','Мінімальний внесок');
+  addSimpleLink(foot,'/avto-pry-neidealnii-kredytnii-istorii','Кредитна історія');
+  addSimpleLink(foot,'/avto-pid-vyplatu-dlia-taksi','Авто для таксі');
   const seo=document.querySelector('.seo-links');
-  if(seo&&!seo.querySelector('a[href="/pro-solodealer"]')){
-    const about=document.createElement('a');about.className='seo-link';about.href='/pro-solodealer';about.innerHTML='<b>Про SoloDealer →</b><span>Як працює сервіс і що відбувається після заявки.</span>';seo.appendChild(about);
-    const faq=document.createElement('a');faq.className='seo-link';faq.href='/faq';faq.innerHTML='<b>Часті питання →</b><span>Перший внесок, кредит, виплата, документи та актуальність авто.</span>';seo.appendChild(faq);
-  }
+  const addSeoCard=(href,title,text)=>{
+    if(!seo||seo.querySelector(`a[href="${href}"]`))return;
+    const a=document.createElement('a');a.className='seo-link';a.href=href;a.innerHTML=`<b>${title} →</b><span>${text}</span>`;seo.appendChild(a);
+  };
+  addSeoCard('/avto-bez-pershoho-vnesku','Авто без першого внеску','Перевірка доступних варіантів без стартового платежу.');
+  addSeoCard('/avto-z-minimalnym-pershym-vneskom','Мінімальний перший внесок','Підбір авто з найменшою стартовою сумою.');
+  addSeoCard('/avto-pry-neidealnii-kredytnii-istorii','Неідеальна кредитна історія','Індивідуальний розгляд доступних варіантів.');
+  addSeoCard('/avto-pid-vyplatu-dlia-taksi','Авто під виплату для таксі','Економні авто для роботи в таксі та доставці.');
+  addSeoCard('/pro-solodealer','Про SoloDealer','Як працює сервіс і що відбувається після заявки.');
+  addSeoCard('/faq','Часті питання','Перший внесок, кредит, виплата, документи та актуальність авто.');
 
   // Каталог: людяний фільтр стану авто замість сухого «з пробігом».
   const filters=document.querySelector('.filters');
