@@ -2,6 +2,10 @@
   "cleanUrls": true,
   "rewrites": [
     {"source": "/sitemap.xml", "destination": "/api/sitemap"},
+    {"source": "/avto-bez-pershoho-vnesku", "destination": "/api/seo-landing?slug=avto-bez-pershoho-vnesku"},
+    {"source": "/avto-z-minimalnym-pershym-vneskom", "destination": "/api/seo-landing?slug=avto-z-minimalnym-pershym-vneskom"},
+    {"source": "/avto-pry-neidealnii-kredytnii-istorii", "destination": "/api/seo-landing?slug=avto-pry-neidealnii-kredytnii-istorii"},
+    {"source": "/avto-pid-vyplatu-dlia-taksi", "destination": "/api/seo-landing?slug=avto-pid-vyplatu-dlia-taksi"},
     {"source": "/auto/:id", "destination": "/api/vehicle"}
   ],
   "headers": [
