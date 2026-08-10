@@ -82,6 +82,23 @@
     window.resetF=function(){originalReset();if(conditionSelect)conditionSelect.value='';applyCondition()};
   }
 
+  // «Хіт продажів» у hero тепер відкриває сторінку цього авто.
+  const heroCard=document.querySelector('.hero-card');
+  const openHeroCar=()=>{
+    try{
+      const heroCar=cars.find(c=>c.id==='byd-qin-plus-2026')||cars.find(c=>(c.images||[]).length);
+      if(heroCar?.id)location.href='/auto/'+encodeURIComponent(heroCar.id);
+    }catch(e){}
+  };
+  if(heroCard){
+    heroCard.style.cursor='pointer';
+    heroCard.setAttribute('role','link');
+    heroCard.setAttribute('tabindex','0');
+    heroCard.setAttribute('aria-label','Відкрити авто — хіт продажів');
+    heroCard.addEventListener('click',openHeroCar);
+    heroCard.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openHeroCar()}});
+  }
+
   window.openCar=function(id){
     if(!id)return;
     location.href='/auto/'+encodeURIComponent(id);
