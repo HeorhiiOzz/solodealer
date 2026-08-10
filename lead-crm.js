@@ -53,6 +53,32 @@
   addSeoCard('/pro-solodealer','Про SoloDealer','Як працює сервіс і що відбувається після заявки.');
   addSeoCard('/faq','Часті питання','Перший внесок, кредит, виплата, документи та актуальність авто.');
 
+  // Допомагаємо пошуку впізнавати бренд латиницею та кирилицею.
+  if(location.pathname==='/'||location.pathname===''){
+    const brandAliases=['Solo Dealer','СолоДілер','Соло Ділер','Солодилер','Соло Дилер','solodealer.store'];
+    if(!document.getElementById('brand-site-structured-data')){
+      const schema=document.createElement('script');
+      schema.id='brand-site-structured-data';
+      schema.type='application/ld+json';
+      schema.textContent=JSON.stringify({
+        '@context':'https://schema.org',
+        '@type':'WebSite',
+        name:'SoloDealer',
+        alternateName:brandAliases,
+        url:'https://solodealer.store/'
+      });
+      document.head.appendChild(schema);
+    }
+    const seoBox=document.querySelector('.seo-box');
+    if(seoBox&&!document.getElementById('brandAliases')){
+      const p=document.createElement('p');
+      p.id='brandAliases';
+      p.style.cssText='margin:22px 0 0;color:#6f6f79;font-size:12px;line-height:1.55';
+      p.textContent='SoloDealer також можуть шукати як СолоДілер, Соло Ділер, Солодилер або Соло Дилер.';
+      seoBox.appendChild(p);
+    }
+  }
+
   // Каталог: людяний фільтр стану авто замість сухого «з пробігом».
   const filters=document.querySelector('.filters');
   const grid=document.getElementById('grid');
