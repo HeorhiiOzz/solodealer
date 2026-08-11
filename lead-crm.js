@@ -109,6 +109,19 @@
     }
     return heroVideo;
   };
+
+  const playHeroOnTouch=()=>{
+    if(!heroVideo||!heroVideo.src)return;
+    if(!heroVideo.paused){document.removeEventListener('touchend',playHeroOnTouch,true);return}
+    heroVideo.muted=true;heroVideo.playsInline=true;
+    heroVideo.setAttribute('muted','');heroVideo.setAttribute('playsinline','');heroVideo.setAttribute('webkit-playsinline','');
+    try{
+      const play=heroVideo.play();
+      if(play?.then)play.then(()=>document.removeEventListener('touchend',playHeroOnTouch,true)).catch(()=>{});
+    }catch(e){}
+  };
+  document.addEventListener('touchend',playHeroOnTouch,{capture:true,passive:true});
+
   const showHeroImage=()=>{
     if(heroVideo){heroVideo.pause();heroVideo.style.display='none';heroVideo.removeAttribute('src');heroVideo.load()}
     if(heroImg)heroImg.style.display='block';
