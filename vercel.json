@@ -17,6 +17,9 @@
     {"source": "/api/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}]}
   ],
   "functions": {
+    "api/video-chunk.js": {
+      "maxDuration": 60
+    },
     "api/reminder-worker.mjs": {
       "maxDuration": 30,
       "experimentalTriggers": [
