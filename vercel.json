@@ -8,7 +8,7 @@
     {"source": "/avto-z-minimalnym-pershym-vneskom", "destination": "/api/seo-landing?slug=avto-z-minimalnym-pershym-vneskom"},
     {"source": "/avto-pry-neidealnii-kredytnii-istorii", "destination": "/api/seo-landing?slug=avto-pry-neidealnii-kredytnii-istorii"},
     {"source": "/avto-pid-vyplatu-dlia-taksi", "destination": "/api/seo-landing?slug=avto-pid-vyplatu-dlia-taksi"},
-    {"source": "/auto/:id", "destination": "/api/vehicle"}
+    {"source": "/auto/:id", "destination": "/api/video-chunk?op=vehicle&id=:id"}
   ],
   "headers": [
     {"source": "/admin", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}]},
