@@ -3,6 +3,8 @@ const {readClients,writeClients}=require('../lib/clientStore');
 const {scheduleClientReminder,isClosed}=require('../lib/reminderQueue');
 const {notifyLead}=require('../lib/telegramNotify');
 const HASH='7a6dc546069b028304e9bf001a98a5e47093f88b69cb62e8fce2fc5b56a7b379';
+const LEAD_LIMIT=3;
+const LEAD_WINDOW_MS=24*60*60*1000;
 
 function okPass(req){
   const p=req.headers['x-admin-password']||'';
@@ -11,6 +13,17 @@ function okPass(req){
 
 const clean=(v,n=500)=>String(v??'').trim().slice(0,n);
 const keyContact=v=>clean(v,120).toLowerCase().replace(/[\s()\-]/g,'');
+const requestIpHash=req=>{
+  const forwarded=String(req.headers['x-forwarded-for']||'').split(',')[0].trim();
+  const ip=clean(forwarded||req.headers['x-real-ip']||'',120);
+  return ip?crypto.createHash('sha256').update(ip).digest('hex').slice(0,24):'';
+};
+const recentLeadCount=(history,since,ipHash='')=>(history||[]).filter(e=>{
+  if(e?.type!=='lead')return false;
+  const at=Date.parse(e.at||'');
+  if(!Number.isFinite(at)||at<since)return false;
+  return ipHash?e.ip_hash===ipHash:true;
+}).length;
 
 async function handleLead(req,res){
   if(req.method!=='POST') return res.status(405).json({error:'Method not allowed'});
@@ -20,12 +33,22 @@ async function handleLead(req,res){
   if(name.length<2||contact.length<4) return res.status(400).json({error:'Вкажіть ім’я та контакт'});
 
   const clients=await readClients();
-  const now=new Date().toISOString();
+  const nowDate=Date.now();
+  const now=new Date(nowDate).toISOString();
+  const since=nowDate-LEAD_WINDOW_MS;
   const match=keyContact(contact);
+  const ipHash=requestIpHash(req);
   let client=clients.find(c=>keyContact(c.contact)===match);
+
+  const contactLeadCount=client?recentLeadCount(client.history,since):0;
+  const ipLeadCount=ipHash?clients.reduce((sum,c)=>sum+recentLeadCount(c.history,since,ipHash),0):0;
+  if(contactLeadCount>=LEAD_LIMIT||ipLeadCount>=LEAD_LIMIT){
+    return res.status(200).json({ok:true,limited:true});
+  }
+
   const isNew=!client;
   const source=clean(b.source,60)||'Сайт';
-  const event={at:now,type:'lead',text:`Нова заявка: ${source}`};
+  const event={at:now,type:'lead',text:`Нова заявка: ${source}`,...(ipHash?{ip_hash:ipHash}:{})};
 
   const incoming={
     budget:clean(b.budget,80),
