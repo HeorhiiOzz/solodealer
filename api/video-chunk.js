@@ -30,7 +30,7 @@ function financeEnhancer(){return `<style id="payoutCalcStyle">.mode-switch{grid
 async function serveVehicle(req,res){
   const send=res.send.bind(res);
   res.send=body=>{
-    if(typeof body==='string'&&body.includes('class="calculator"')&&!body.includes('payoutCalcScript'))body=body.replace('</body>',financeEnhancer()+'</body>');
+    if(typeof body==='string'&&body.includes('class="calculator"')&&!body.includes('payoutCalcScript'))body=body.replace('</body>',()=>financeEnhancer()+'</body>');
     return send(body);
   };
   return vehicleHandler(req,res);
