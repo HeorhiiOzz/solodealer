@@ -1,6 +1,8 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    {"source": "/api/upload", "destination": "/api/catalog?op=upload"},
+    {"source": "/api/leads", "destination": "/api/clients?op=lead"},
     {"source": "/sitemap.xml", "destination": "/api/sitemap"},
     {"source": "/avto-bez-pershoho-vnesku", "destination": "/api/seo-landing?slug=avto-bez-pershoho-vnesku"},
     {"source": "/avto-z-minimalnym-pershym-vneskom", "destination": "/api/seo-landing?slug=avto-z-minimalnym-pershym-vneskom"},
