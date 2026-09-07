@@ -4,13 +4,20 @@ const DEFAULTS={usd_uah_rate:42,annual_rate:20,min_down_payment:10,max_months:60
 function okPass(req){let p=req.headers['x-admin-password']||'';return crypto.createHash('sha256').update(String(p)).digest('hex')===HASH}
 async function readSettings(){
   if(!process.env.BLOB_READ_WRITE_TOKEN)return DEFAULTS;
-  const {list}=await import('@vercel/blob');
-  const r=await list({prefix:'settings/finance-',limit:100,token:process.env.BLOB_READ_WRITE_TOKEN});
-  if(!r.blobs?.length)return DEFAULTS;
-  const b=[...r.blobs].sort((a,b)=>new Date(b.uploadedAt)-new Date(a.uploadedAt))[0];
-  const fr=await fetch(b.url,{cache:'no-store'});
-  const saved=await fr.json();
-  return {...DEFAULTS,...saved,annual_rate:20,min_down_payment:10,max_months:60};
+  try{
+    const {list}=await import('@vercel/blob');
+    const r=await list({prefix:'settings/finance-',limit:100,token:process.env.BLOB_READ_WRITE_TOKEN});
+    if(!r.blobs?.length)return DEFAULTS;
+    const b=[...r.blobs].sort((a,b)=>new Date(b.uploadedAt)-new Date(a.uploadedAt))[0];
+    const fr=await fetch(b.url,{cache:'no-store'});
+    if(!fr.ok)throw new Error(`Blob finance HTTP ${fr.status}`);
+    const text=await fr.text();
+    const saved=JSON.parse(text);
+    return {...DEFAULTS,...saved,annual_rate:20,min_down_payment:10,max_months:60};
+  }catch(e){
+    console.error('Finance Blob unavailable, using defaults:',e?.message||e);
+    return DEFAULTS;
+  }
 }
 module.exports=async(req,res)=>{
   try{

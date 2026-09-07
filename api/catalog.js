@@ -9,12 +9,21 @@ function okPass(req){
 
 async function readCars(){
   if(!process.env.BLOB_READ_WRITE_TOKEN) return seed;
-  const {list}=await import('@vercel/blob');
-  const r=await list({prefix:'catalog/catalog-',limit:100,token:process.env.BLOB_READ_WRITE_TOKEN});
-  if(!r.blobs?.length) return seed;
-  const b=[...r.blobs].sort((a,b)=>new Date(b.uploadedAt)-new Date(a.uploadedAt))[0];
-  const fr=await fetch(b.url,{cache:'no-store'});
-  return await fr.json();
+  try{
+    const {list}=await import('@vercel/blob');
+    const r=await list({prefix:'catalog/catalog-',limit:100,token:process.env.BLOB_READ_WRITE_TOKEN});
+    if(!r.blobs?.length) return seed;
+    const b=[...r.blobs].sort((a,b)=>new Date(b.uploadedAt)-new Date(a.uploadedAt))[0];
+    const fr=await fetch(b.url,{cache:'no-store'});
+    if(!fr.ok) throw new Error(`Blob catalog HTTP ${fr.status}`);
+    const text=await fr.text();
+    const cars=JSON.parse(text);
+    if(!Array.isArray(cars)) throw new Error('Blob catalog is not an array');
+    return cars;
+  }catch(e){
+    console.error('Catalog Blob unavailable, using seed fallback:',e?.message||e);
+    return seed;
+  }
 }
 
 async function handleUpload(req,res){
