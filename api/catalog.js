@@ -1,5 +1,6 @@
 const crypto=require('crypto');
 const seed=require('../seed.json');
+const {readLatestJsonArray}=require('../lib/blobJson');
 const HASH='7a6dc546069b028304e9bf001a98a5e47093f88b69cb62e8fce2fc5b56a7b379';
 
 function okPass(req){
@@ -10,20 +11,12 @@ function okPass(req){
 async function readCars(){
   if(!process.env.BLOB_READ_WRITE_TOKEN) return seed;
   try{
-    const {list}=await import('@vercel/blob');
-    const r=await list({prefix:'catalog/catalog-',limit:100,token:process.env.BLOB_READ_WRITE_TOKEN});
-    if(!r.blobs?.length) return seed;
-    const b=[...r.blobs].sort((a,b)=>new Date(b.uploadedAt)-new Date(a.uploadedAt))[0];
-    const fr=await fetch(b.url,{cache:'no-store'});
-    if(!fr.ok) throw new Error(`Blob catalog HTTP ${fr.status}`);
-    const text=await fr.text();
-    const cars=JSON.parse(text);
-    if(!Array.isArray(cars)) throw new Error('Blob catalog is not an array');
-    return cars;
+    const cars=await readLatestJsonArray('catalog/catalog-');
+    if(Array.isArray(cars)&&cars.length) return cars;
   }catch(e){
-    console.error('Catalog Blob unavailable, using seed fallback:',e?.message||e);
-    return seed;
+    console.error('Catalog Blob recovery failed:',e?.message||e);
   }
+  return seed;
 }
 
 async function handleUpload(req,res){
